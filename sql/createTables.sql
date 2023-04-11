@@ -4,10 +4,12 @@ CREATE TABLE IF NOT EXISTS developers (
   "email" VARCHAR(50) UNIQUE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS developers_infos (
+CREATE TYPE OS AS ENUM('Windows', 'Linux', 'MacOS');
+
+CREATE TABLE IF NOT EXISTS developer_infos (
   "id" SERIAL PRIMARY KEY,
   "developerSince" DATE NOT NULL,
-  "preferredOS" ENUM('Windows', 'Linux', 'MacOS') NOT NULL,
+  "preferredOS" OS NOT NULL,
   "developerId" INTEGER UNIQUE NOT NULL,
   FOREIGN KEY ("developerId") REFERENCES developers("id") ON DELETE CASCADE 
 );
@@ -28,6 +30,18 @@ CREATE TABLE IF NOT EXISTS technologies (
   "id" SERIAL PRIMARY KEY,
   "name" VARCHAR(30) NOT NULL
 );
+
+INSERT INTO technologies ("name")
+VALUES 
+('JavaScript')
+('Python')
+('React')
+('Express.js')
+('HTML')
+('CSS')
+('Django')
+('PostgreSQL')
+('MongoDB');
 
 CREATE TABLE IF NOT EXISTS projects_technologies (
   "id" SERIAL PRIMARY KEY,
