@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS developers (
   "email" VARCHAR(50) UNIQUE NOT NULL
 );
 
-CREATE TYPE OS AS ENUM('Windows', 'Linux', 'MacOS');
+-- CREATE TYPE OS AS ENUM('Windows', 'Linux', 'MacOS');
 
 CREATE TABLE IF NOT EXISTS developer_infos (
   "id" SERIAL PRIMARY KEY,
@@ -33,14 +33,14 @@ CREATE TABLE IF NOT EXISTS technologies (
 
 INSERT INTO technologies ("name")
 VALUES 
-('JavaScript')
-('Python')
-('React')
-('Express.js')
-('HTML')
-('CSS')
-('Django')
-('PostgreSQL')
+('JavaScript'),
+('Python'),
+('React'),
+('Express.js'),
+('HTML'),
+('CSS'),
+('Django'),
+('PostgreSQL'),
 ('MongoDB');
 
 CREATE TABLE IF NOT EXISTS projects_technologies (
