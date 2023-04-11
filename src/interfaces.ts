@@ -9,19 +9,15 @@ export interface IDeveloper {
 export type TDeveloperCreate = Omit<IDeveloper, "id">;
 export type TDeveloperResult = QueryResult<IDeveloper>;
 
-export interface IDeveloper_infos {
+export interface IDeveloperInfos {
   id: number;
   developerSince: Date;
   preferredOS: string;
   developerId: number;
 }
 
-export interface IDeveloper_infos {
-  id: number;
-  developerSince: Date;
-  preferredOS: string;
-  developerId: number;
-}
+export type TDeveloperInfosCreate = Omit<IDeveloperInfos, "id">;
+export type TDeveloperInfosResult = QueryResult<IDeveloperInfos>;
 
 export interface IDeveloperComplete {
   developerId: number;
