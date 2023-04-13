@@ -6,12 +6,12 @@ CREATE TABLE IF NOT EXISTS developers (
 
 DROP TYPE IF EXISTS OS;
 
-CREATE TYPE OS AS ENUM('Windows', 'Linux', 'MacOS');
+CREATE TYPE "OS" AS ENUM('Windows', 'Linux', 'MacOS');
 
 CREATE TABLE IF NOT EXISTS developer_infos (
   "id" SERIAL PRIMARY KEY,
   "developerSince" DATE NOT NULL,
-  "preferredOS" OS NOT NULL,
+  "preferredOS" "OS" NOT NULL,
   "developerId" INTEGER UNIQUE NOT NULL,
   FOREIGN KEY ("developerId") REFERENCES developers("id") ON DELETE CASCADE 
 );
