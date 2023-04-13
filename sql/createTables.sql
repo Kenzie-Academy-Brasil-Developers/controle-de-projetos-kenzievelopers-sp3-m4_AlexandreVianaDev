@@ -4,7 +4,9 @@ CREATE TABLE IF NOT EXISTS developers (
   "email" VARCHAR(50) UNIQUE NOT NULL
 );
 
--- CREATE TYPE OS AS ENUM('Windows', 'Linux', 'MacOS');
+DROP TYPE IF EXISTS OS;
+
+CREATE TYPE OS AS ENUM('Windows', 'Linux', 'MacOS');
 
 CREATE TABLE IF NOT EXISTS developer_infos (
   "id" SERIAL PRIMARY KEY,
@@ -22,7 +24,7 @@ CREATE TABLE IF NOT EXISTS projects (
   "repository" VARCHAR(120) NOT NULL,
   "startDate" DATE NOT NULL,
   "endDate" DATE,
-  "developerId" INTEGER NOT NULL,
+  "developerId" INTEGER,
   FOREIGN KEY ("developerId") REFERENCES developers("id") ON DELETE SET NULL 
 );
 
