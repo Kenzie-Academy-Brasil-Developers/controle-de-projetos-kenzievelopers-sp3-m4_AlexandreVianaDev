@@ -41,9 +41,27 @@ export interface ITechnology {
 export type TTechnologyCreate = Omit<IProject, "id">;
 export type TTechnologyResult = QueryResult<ITechnology>;
 
-export interface IProject_technology {
+export interface IProjectTechnology {
   id: number;
   addedIn: Date;
   technologyId: number;
   projectId: number;
 }
+
+export type TProjectTechnologyCreate = Omit<IProjectTechnology, "id">;
+export type TProjectTechnologyResult = QueryResult<IProjectTechnology>;
+
+export interface IProjectComplete {
+  projectId: number;
+  projectName: string;
+  projectDescription: string;
+  projectEstimatedTime: string;
+  projectRepository: string;
+  projectStartDate: Date;
+  projectEndDate: Date | null;
+  projectDeveloperId: number;
+  technologyId?: number | null;
+  technologyName?: string | null;
+}
+
+export type TProjectCompleteResult = QueryResult<IProjectComplete>;

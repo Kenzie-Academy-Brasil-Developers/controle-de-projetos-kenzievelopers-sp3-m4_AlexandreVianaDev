@@ -3,14 +3,16 @@ import {
   IDeveloper,
   IDeveloperInfos,
   IProject,
-  ITechnology,
+  IProjectComplete,
+  IProjectTechnology,
   TDeveloperCreate,
   TDeveloperInfosCreate,
   TDeveloperInfosResult,
   TDeveloperResult,
+  TProjectCompleteResult,
   TProjectCreate,
   TProjectResult,
-  TTechnologyResult,
+  TProjectTechnologyResult,
 } from "./interfaces";
 import { client } from "./database";
 import { Request, Response } from "express";
@@ -23,11 +25,11 @@ export const insertDeveloper = async (
   const developerData: TDeveloperCreate = req.body;
   const queryString: string = format(
     `
-        INSERT INTO developers
-            (%I)
-        VALUES
-            (%L)
-        RETURNING *;
+      INSERT INTO developers
+        (%I)
+      VALUES
+        (%L)
+      RETURNING *;
     `,
     Object.keys(developerData),
     Object.values(developerData)
@@ -53,7 +55,7 @@ export const getDeveloperById = async (
       developer_infos devInfos ON devInfos."developerId" = dev."id"
     WHERE
       dev."id" = $1;
-    `;
+  `;
 
   const queryConfig: QueryConfig = {
     text: queryString,
@@ -62,8 +64,6 @@ export const getDeveloperById = async (
 
   const queryResult: TDeveloperResult = await client.query(queryConfig);
   const developer: IDeveloper = queryResult.rows[0];
-
-  console.log("RETORNO", developer);
 
   return res.status(200).json(developer);
 };
@@ -78,8 +78,10 @@ export const updateDeveloper = async (
   const queryString: string = format(
     `
       UPDATE developers
-      SET (%I) = ROW(%L)
-      WHERE id = $1
+      SET 
+        (%I) = ROW(%L)
+      WHERE
+        id = $1
       RETURNING *;
     `,
     Object.keys(developerData),
@@ -91,8 +93,9 @@ export const updateDeveloper = async (
   };
 
   const queryResult: TDeveloperResult = await client.query(queryConfig);
+  const developer: IDeveloper = queryResult.rows[0];
 
-  return res.json(queryResult.rows[0]);
+  return res.json(developer);
 };
 
 export const deleteDeveloper = async (
@@ -102,7 +105,8 @@ export const deleteDeveloper = async (
   const id: number = res.locals.id;
   const queryString: string = `
     DELETE FROM developers
-    WHERE id = $1
+    WHERE
+      id = $1
     RETURNING *;
   `;
 
@@ -128,11 +132,11 @@ export const insertDeveloperInfo = async (
 
   const queryString: string = format(
     `
-        INSERT INTO developer_infos
-            (%I)
-        VALUES
-            (%L)
-        RETURNING *;
+      INSERT INTO developer_infos
+          (%I)
+      VALUES
+          (%L)
+      RETURNING *;
     `,
     Object.keys(developerInfosDataWithId),
     Object.values(developerInfosDataWithId)
@@ -156,11 +160,11 @@ export const insertProject = async (
 
   const queryString: string = format(
     `
-        INSERT INTO projects
-            (%I)
-        VALUES
-            (%L)
-        RETURNING *;
+      INSERT INTO projects
+          (%I)
+      VALUES
+          (%L)
+      RETURNING *;
     `,
     Object.keys(projectData),
     Object.values(projectData)
@@ -176,20 +180,20 @@ export const getProjectById = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  // const projectId: number = parseInt(req.params.id);
   const projectId: number = res.locals.projectId;
 
   const queryString: string = `
-  SELECT
-    p."id" AS "projectId", p."name" AS "projectName", p."description" AS "projectDescription", p."estimatedTime" AS "projectEstimatedTime", p."repository" AS "projectRepository", p."startDate" AS "projectStartDate", p."endDate" AS "projectEndDate", p."developerId" AS "projectDeveloperId", ptechs."technologyId", techs."name" AS "technologyName"
-  FROM
-    projects p
-  LEFT JOIN
-    projects_technologies ptechs ON ptechs."projectId" = p."id"
-  LEFT JOIN
-    technologies techs ON techs."id" = ptechs."technologyId"
-  WHERE
-    p."id" = $1;`;
+    SELECT
+      p."id" AS "projectId", p."name" AS "projectName", p."description" AS "projectDescription", p."estimatedTime" AS "projectEstimatedTime", p."repository" AS "projectRepository", p."startDate" AS "projectStartDate", p."endDate" AS "projectEndDate", p."developerId" AS "projectDeveloperId", ptechs."technologyId", techs."name" AS "technologyName"
+    FROM
+      projects p
+    LEFT JOIN
+      projects_technologies ptechs ON ptechs."projectId" = p."id"
+    LEFT JOIN
+      technologies techs ON techs."id" = ptechs."technologyId"
+    WHERE
+      p."id" = $1;
+  `;
 
   const queryConfig: QueryConfig = {
     text: queryString,
@@ -197,9 +201,9 @@ export const getProjectById = async (
   };
 
   const queryResult: TProjectResult = await client.query(queryConfig);
-  // const project: IProject = queryResult.rows[0];
+  const projects: IProject[] = queryResult.rows;
 
-  return res.status(200).json(queryResult.rows);
+  return res.status(200).json(projects);
 };
 
 export const updateProject = async (
@@ -212,8 +216,10 @@ export const updateProject = async (
   const queryString: string = format(
     `
       UPDATE projects
-      SET (%I) = ROW(%L)
-      WHERE id = $1
+      SET 
+        (%I) = ROW(%L)
+      WHERE
+        id = $1
       RETURNING *;
     `,
     Object.keys(projectData),
@@ -224,9 +230,10 @@ export const updateProject = async (
     values: [projectId],
   };
 
-  const queryResult: TDeveloperResult = await client.query(queryConfig);
+  const queryResult: TProjectResult = await client.query(queryConfig);
+  const developer: IProject = queryResult.rows[0];
 
-  return res.json(queryResult.rows[0]);
+  return res.json(developer);
 };
 
 export const deleteProject = async (
@@ -236,7 +243,8 @@ export const deleteProject = async (
   const projectId: number = res.locals.projectId;
   const queryString: string = `
     DELETE FROM projects
-    WHERE id = $1
+    WHERE
+      id = $1
     RETURNING *;
   `;
 
@@ -245,7 +253,7 @@ export const deleteProject = async (
     values: [projectId],
   };
 
-  const queryResult: TDeveloperResult = await client.query(queryConfig);
+  const queryResult: TProjectResult = await client.query(queryConfig);
 
   return res.status(204).send();
 };
@@ -258,11 +266,10 @@ export const insertTechs = async (
   const techId: number = res.locals.techId;
 
   const queryString: string = `
-    INSERT INTO 
-      projects_technologies
-   ("addedIn", "technologyId", "projectId")
+    INSERT INTO projects_technologies
+      ("addedIn", "technologyId", "projectId")
     VALUES
-    ($1, $2, $3)
+      ($1, $2, $3)
     RETURNING *;
   `;
 
@@ -271,28 +278,29 @@ export const insertTechs = async (
     values: [new Date(), techId, projectId],
   };
 
-  const queryResult: TTechnologyResult = await client.query(queryConfig);
-  const tech: ITechnology = queryResult.rows[0];
+  const queryResult: TProjectTechnologyResult = await client.query(queryConfig);
+  const tech: IProjectTechnology = queryResult.rows[0];
 
   const queryString2: string = `
-  SELECT
-    p."id" AS "projectId", p."name" AS "projectName", p."description" AS "projectDescription", p."estimatedTime" AS "projectEstimatedTime", p."repository" AS "projectRepository", p."startDate" AS "projectStartDate", p."endDate" AS "projectEndDate", ptechs."technologyId", techs."name" AS "technologyName"
-  FROM
-    projects p
-  LEFT JOIN
-    projects_technologies ptechs ON ptechs."projectId" = p."id"
-  LEFT JOIN
-    technologies techs ON techs."id" = ptechs."technologyId"
-  WHERE
-    p."id" = $1;`;
+    SELECT
+      p."id" AS "projectId", p."name" AS "projectName", p."description" AS "projectDescription", p."estimatedTime" AS "projectEstimatedTime", p."repository" AS "projectRepository", p."startDate" AS "projectStartDate", p."endDate" AS "projectEndDate", ptechs."technologyId", techs."name" AS "technologyName"
+    FROM
+      projects p
+    LEFT JOIN
+      projects_technologies ptechs ON ptechs."projectId" = p."id"
+    LEFT JOIN
+      technologies techs ON techs."id" = ptechs."technologyId"
+    WHERE
+      p."id" = $1;
+  `;
 
   const queryConfig2: QueryConfig = {
     text: queryString2,
     values: [projectId],
   };
 
-  const queryResult2: TProjectResult = await client.query(queryConfig2);
-  const project: IProject = queryResult2.rows[0];
+  const queryResult2: TProjectCompleteResult = await client.query(queryConfig2);
+  const project: IProjectComplete = queryResult2.rows[0];
 
   return res.status(201).json(project);
 };
@@ -304,8 +312,7 @@ export const deleteTechs = async (
   const projectId: number = res.locals.projectId;
   const techId: number = res.locals.techId;
   const queryString: string = `
-    DELETE FROM 
-      projects_technologies ptechs
+    DELETE FROM projects_technologies ptechs
     WHERE 
       ptechs."projectId" = $1 AND ptechs."technologyId" = $2
     RETURNING *;
@@ -316,7 +323,7 @@ export const deleteTechs = async (
     values: [projectId, techId],
   };
 
-  const queryResult: TDeveloperResult = await client.query(queryConfig);
+  const queryResult: TProjectTechnologyResult = await client.query(queryConfig);
 
   return res.status(204).send();
 };
