@@ -49,24 +49,11 @@ export const getDeveloperById = async (
       dev."id" AS "developerId", dev."name" AS "developerName", dev."email" AS "developerEmail", devInfos."developerSince" AS "developerInfoDeveloperSince", devInfos."preferredOS" AS "developerInfoPreferredOS"
     FROM
       developers dev
-    JOIN 
+    LEFT JOIN 
       developer_infos devInfos ON devInfos."developerId" = dev."id"
     WHERE
       dev."id" = $1;
     `;
-
-  // const queryString: string = `
-  // SELECT
-  //   dev."id" AS "developerId", dev."name" AS "developerName", dev."email" AS "developerEmail", devInfos."developerSince" AS "developerInfoDeveloperSince", devInfos."preferredOS" AS "developerInfoPreferredOS"
-  // FROM
-  //   developers dev
-  // JOIN
-  //   developer_infos devInfos ON devInfos."developerId" = dev."id"
-  // JOIN
-  //   projects p ON p."developerId" = dev."id"
-  // WHERE
-  //   dev."id" = $1;
-  // `;
 
   const queryConfig: QueryConfig = {
     text: queryString,
@@ -75,6 +62,8 @@ export const getDeveloperById = async (
 
   const queryResult: TDeveloperResult = await client.query(queryConfig);
   const developer: IDeveloper = queryResult.rows[0];
+
+  console.log("RETORNO", developer);
 
   return res.status(200).json(developer);
 };
@@ -208,9 +197,9 @@ export const getProjectById = async (
   };
 
   const queryResult: TProjectResult = await client.query(queryConfig);
-  const project: IProject = queryResult.rows[0];
+  // const project: IProject = queryResult.rows[0];
 
-  return res.status(200).json(project);
+  return res.status(200).json(queryResult.rows);
 };
 
 export const updateProject = async (

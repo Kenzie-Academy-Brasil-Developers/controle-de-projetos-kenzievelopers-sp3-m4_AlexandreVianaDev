@@ -54,15 +54,6 @@ export const verifyIfIdExists = async (
     values: [id],
   };
 
-  if (!id) {
-    const developerId: number = req.body.developerId;
-
-    queryConfig = {
-      text: queryString,
-      values: [developerId],
-    };
-  }
-
   const queryResult: TDeveloperResult = await client.query(queryConfig);
 
   if (queryResult.rowCount === 0) {
@@ -187,6 +178,38 @@ export const verifyIfPreferredOSExists = (
 
 //   return next();
 // };
+
+export const verifyIfDeveloperIdExists = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  const developerId: number = req.body.developerId;
+
+  const queryString: string = `
+        SELECT *
+        FROM developers
+        WHERE id = $1;
+    `;
+
+  const queryConfig: QueryConfig = {
+    text: queryString,
+    values: [developerId],
+  };
+
+  const queryResult: TDeveloperResult = await client.query(queryConfig);
+
+  if (queryResult.rowCount === 0) {
+    return res.status(404).json({
+      message: "Developer not found.",
+    });
+  }
+
+  res.locals.id = developerId;
+  res.locals.developer = queryResult.rows[0];
+
+  return next();
+};
 
 export const verifyIfProjectIdExists = async (
   req: Request,
@@ -335,7 +358,6 @@ export const verifyIfTechAlreadyAdded = async (
 
   const queryResult: TDeveloperResult = await client.query(queryConfig);
 
-  console.log(req.route.path);
   if (queryResult.rowCount > 0) {
     if (
       req.method === "DELETE" &&

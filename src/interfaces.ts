@@ -19,14 +19,6 @@ export interface IDeveloperInfos {
 export type TDeveloperInfosCreate = Omit<IDeveloperInfos, "id">;
 export type TDeveloperInfosResult = QueryResult<IDeveloperInfos>;
 
-// export interface IDeveloperComplete {
-//   developerId: number;
-//   developerName: string;
-//   developerEmail: string;
-//   developerInfoDeveloperSince: Date | null;
-//   developerInfoPreferredOS: string | null;
-// }
-
 export interface IProject {
   id: number;
   name: string;
@@ -40,19 +32,6 @@ export interface IProject {
 
 export type TProjectCreate = Omit<IProject, "id">;
 export type TProjectResult = QueryResult<IProject>;
-
-// export interface IProjectComplete {
-//   projectId: number;
-//   projectName: string;
-//   projectDescription: string;
-//   projectEstimatedTime: string;
-//   projectRepository: string;
-//   projectStartDate: Date;
-//   projectEndDate: Date | null;
-//   projectDeveloperId: number;
-//   technologyId: number | null;
-//   technologyName: string | null;
-// }
 
 export interface ITechnology {
   id: number;

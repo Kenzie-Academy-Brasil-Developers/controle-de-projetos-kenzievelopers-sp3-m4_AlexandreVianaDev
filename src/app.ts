@@ -14,6 +14,7 @@ import {
   updateProject,
 } from "./logics";
 import {
+  verifyIfDeveloperIdExists,
   verifyIfDeveloperInfosExists,
   verifyIfEmailExists,
   verifyIfIdExists,
@@ -44,11 +45,11 @@ app.post(
   insertDeveloperInfo
 );
 
-app.post("/projects", verifyIfIdExists, insertProject);
+app.post("/projects", verifyIfDeveloperIdExists, insertProject);
 app.get("/projects/:id", verifyIfProjectIdExists, getProjectById);
 app.patch(
   "/projects/:id",
-  verifyIfIdExists,
+  verifyIfDeveloperIdExists,
   verifyIfProjectIdExists,
   updateProject
 );
